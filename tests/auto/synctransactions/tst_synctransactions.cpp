@@ -152,7 +152,11 @@ void tst_synctransactions::cleanup()
         m_createdIds.clear();
     }
     if (!m_createdColIds.isEmpty()) {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+        for (const QContactCollectionId &colId : m_createdColIds.values()) {
+#else
         for (const QContactCollectionId &colId : m_createdColIds.toList()) {
+#endif
             m_cm->removeCollection(colId);
             cme->clearChangeFlags(colId, &err);
         }

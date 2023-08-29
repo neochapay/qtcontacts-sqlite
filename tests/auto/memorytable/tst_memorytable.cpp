@@ -98,9 +98,17 @@ char *tst_MemoryTable::testBuffer(size_t length)
     char* buf(new char[length]);
 
     // Fill the buffer with garbage
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    srand(static_cast<quint32>(QDateTime::currentDateTime().toMSecsSinceEpoch()));
+#else
     qsrand(static_cast<quint32>(QDateTime::currentDateTime().toMSecsSinceEpoch()));
+#endif
     for (char *p = buf, *end = p + length; p != end; p += sizeof(uint)) {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+        *(reinterpret_cast<uint *>(p)) = rand();
+#else
         *(reinterpret_cast<uint *>(p)) = qrand();
+#endif
     }
 
     return buf;
@@ -566,7 +574,11 @@ void tst_MemoryTable::migration()
 
     quint32 seed = static_cast<quint32>(QDateTime::currentDateTime().toMSecsSinceEpoch());
     qDebug() << "Randomized test - seed:" << seed;
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    srand(seed);
+#else
     qsrand(seed);
+#endif
 
     for (int i = 0; i < 10; ++i) {
         MemoryTable mt(buf.data(), 1024, true);
@@ -574,8 +586,13 @@ void tst_MemoryTable::migration()
         // Populate the table
         quint32 key = 0u;
         MemoryTable::Error e;
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+        while ((e = mt.insert(key, QByteArray(rand() % 64, 'x'))) == MemoryTable::NoError) {
+            if ((rand() % 2) == 0) {
+#else
         while ((e = mt.insert(key, QByteArray(qrand() % 64, 'x'))) == MemoryTable::NoError) {
             if ((qrand() % 2) == 0) {
+#endif
                 // Update this key, possibly causing re-allocation of the block
                 ++key;
             }

@@ -208,7 +208,11 @@ QContact generateContact(const QContactCollectionId &collectionId = QContactColl
     // to ensure that we have heterogeneous contacts in the db.
     QContact retn;
     retn.setCollectionId(collectionId);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    int random = rand();
+#else
     int random = qrand();
+#endif
     bool preventAggregate = (!collectionId.isNull() && !possiblyAggregate);
 
     // We always have a name.  Select an overlapping name if the sync target
@@ -263,8 +267,11 @@ QContact generateContact(const QContactCollectionId &collectionId = QContactColl
         QContactHobby h1;
         h1.setHobby(hobbies.at(random % hobbies.size()));
         retn.saveDetail(&h1);
-
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+        int newRandom = rand();
+#else
         int newRandom = qrand();
+#endif
         if ((newRandom % 2) == 0) {
             QContactHobby h2;
             h2.setHobby(hobbies.at(newRandom % hobbies.size()));
@@ -345,9 +352,17 @@ static qint64 aggregatedPresenceUpdate(QContactManager &manager, bool quickMode)
         cp.setNickname(genstr);
         cp.setCustomMessage(genstr);
         cp.setTimestamp(timestamp);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+        cp.setPresenceState(static_cast<QContactPresence::PresenceState>((rand() % 4) + 1));
+#else
         cp.setPresenceState(static_cast<QContactPresence::PresenceState>((qrand() % 4) + 1));
+#endif
         nn.setNickname(nn.nickname() + genstr);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+        av.setImageUrl(genstr + presenceAvatars.at(rand() % presenceAvatars.size()));
+#else
         av.setImageUrl(genstr + presenceAvatars.at(qrand() % presenceAvatars.size()));
+#endif
         curr.saveDetail(&cp);
         curr.saveDetail(&nn);
         curr.saveDetail(&av);
@@ -369,7 +384,11 @@ static qint64 aggregatedPresenceUpdate(QContactManager &manager, bool quickMode)
     for (int j = 0; j < morePrefillData.size(); ++j) {
         QContact curr = morePrefillData.at(j);
         QContactPresence cp = curr.detail<QContactPresence>();
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+        cp.setPresenceState(static_cast<QContactPresence::PresenceState>((rand() % 4) + 1));
+#else
         cp.setPresenceState(static_cast<QContactPresence::PresenceState>((qrand() % 4) + 1));
+#endif
         curr.saveDetail(&cp);
         contactsToUpdate.append(curr);
     }
@@ -390,7 +409,11 @@ static qint64 aggregatedPresenceUpdate(QContactManager &manager, bool quickMode)
     for (int j = 0; j < morePrefillData.size(); ++j) {
         QContact curr = morePrefillData.at(j);
         QContactPresence cp = curr.detail<QContactPresence>();
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+        cp.setPresenceState(static_cast<QContactPresence::PresenceState>((rand() % 4) + 1));
+#else
         cp.setPresenceState(static_cast<QContactPresence::PresenceState>((qrand() % 4) + 1));
+#endif
         curr.saveDetail(&cp);
         contactsToUpdate.append(curr);
     }
@@ -488,9 +511,17 @@ static qint64 nonAggregatedPresenceUpdate(QContactManager &manager, bool quickMo
         cp.setNickname(genstr);
         cp.setCustomMessage(genstr);
         cp.setTimestamp(timestamp);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+        cp.setPresenceState(static_cast<QContactPresence::PresenceState>((rand() % 4) + 1));
+#else
         cp.setPresenceState(static_cast<QContactPresence::PresenceState>((qrand() % 4) + 1));
+#endif
         nn.setNickname(nn.nickname() + genstr);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+        av.setImageUrl(genstr + presenceAvatars.at(rand() % presenceAvatars.size()));
+#else
         av.setImageUrl(genstr + presenceAvatars.at(qrand() % presenceAvatars.size()));
+#endif
         curr.saveDetail(&cp);
         curr.saveDetail(&nn);
         curr.saveDetail(&av);
@@ -572,9 +603,17 @@ static qint64 scalingPresenceUpdate(QContactManager &manager, bool quickMode)
         cp.setNickname(genstr);
         cp.setCustomMessage(genstr);
         cp.setTimestamp(timestamp);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+        cp.setPresenceState(static_cast<QContactPresence::PresenceState>((rand() % 4) + 1));
+#else
         cp.setPresenceState(static_cast<QContactPresence::PresenceState>((qrand() % 4) + 1));
+#endif
         nn.setNickname(nn.nickname() + genstr);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+        av.setImageUrl(genstr + presenceAvatars.at(rand() % presenceAvatars.size()));
+#else
         av.setImageUrl(genstr + presenceAvatars.at(qrand() % presenceAvatars.size()));
+#endif
         curr.saveDetail(&cp);
         curr.saveDetail(&nn);
         curr.saveDetail(&av);
@@ -653,9 +692,17 @@ static qint64 entireBatchPresenceUpdate(QContactManager &manager, bool quickMode
         cp.setNickname(genstr);
         cp.setCustomMessage(genstr);
         cp.setTimestamp(timestamp);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+        cp.setPresenceState(static_cast<QContactPresence::PresenceState>((rand() % 4) + 1));
+#else
         cp.setPresenceState(static_cast<QContactPresence::PresenceState>((qrand() % 4) + 1));
+#endif
         nn.setNickname(nn.nickname() + genstr);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+        av.setImageUrl(genstr + presenceAvatars.at(rand() % presenceAvatars.size()));
+#else
         av.setImageUrl(genstr + presenceAvatars.at(qrand() % presenceAvatars.size()));
+#endif
         curr.saveDetail(&cp);
         curr.saveDetail(&nn);
         curr.saveDetail(&av);
@@ -739,9 +786,17 @@ static qint64 smallBatchPresenceUpdate(QContactManager &manager, bool quickMode)
         cp.setNickname(genstr);
         cp.setCustomMessage(genstr);
         cp.setTimestamp(QDateTime::currentDateTime());
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+        cp.setPresenceState(static_cast<QContactPresence::PresenceState>(rand() % 4));
+#else
         cp.setPresenceState(static_cast<QContactPresence::PresenceState>(qrand() % 4));
+#endif
         nn.setNickname(nn.nickname() + genstr);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+        av.setImageUrl(genstr + presenceAvatars.at(rand() % presenceAvatars.size()));
+#else
         av.setImageUrl(genstr + presenceAvatars.at(qrand() % presenceAvatars.size()));
+#endif
         curr.saveDetail(&cp);
         curr.saveDetail(&nn);
         curr.saveDetail(&av);
@@ -1838,19 +1893,35 @@ int main(int argc, char  *argv[])
     if (queryPlan) {
         // hidden/undocumented feature: perform two writes and one read
         // which we will use to inspect the query plans.
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+        srand(42);
+#else
         qsrand(42);
+#endif
         elapsedTimeTotal = performQueryPlanOperations(manager);
     } else if (readTestData) {
         // hidden/undocumented feature: time read all contacts from database.
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+        srand(42);
+#else
         qsrand(42);
+#endif
         elapsedTimeTotal = performReadQueryPlanTestData(manager);
     } else if (testData) {
         // hidden/undocumented feature: fill database with random data
         // which we then use to generate the query plan.
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+        srand(42);
+#else
         qsrand(42);
+#endif
         elapsedTimeTotal = generateQueryPlanTestData(manager, args.last().toInt());
     } else {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+        srand(stable ? 42 : QDateTime::currentDateTime().time().second());
+#else
         qsrand(stable ? 42 : QDateTime::currentDateTime().time().second());
+#endif
         elapsedTimeTotal += (runAll || functionArgs.contains("simpleFilterAndSort")) ? simpleFilterAndSort(manager, quickMode) : 0;
         elapsedTimeTotal += (runAll || functionArgs.contains("asynchronousOperations")) ? asynchronousOperations(manager, quickMode) : 0;
         elapsedTimeTotal += (runAll || functionArgs.contains("synchronousOperations")) ? synchronousOperations(manager, quickMode) : 0;

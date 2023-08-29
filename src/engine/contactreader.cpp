@@ -135,7 +135,11 @@ static QVariant stringListValue(const QVariant &columnValue)
         return columnValue;
 
     QString listString(columnValue.toString());
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    return listString.split(QLatin1Char(';'), Qt::SkipEmptyParts);
+#else
     return listString.split(QLatin1Char(';'), QString::SkipEmptyParts);
+#endif
 }
 
 static QVariant urlValue(const QVariant &columnValue)
@@ -205,7 +209,11 @@ static void setValues(QContactAddress *detail, QSqlQuery *query, const int offse
     setValue(detail, T::FieldLocality     , query->value(offset + 3));
     setValue(detail, T::FieldPostcode     , query->value(offset + 4));
     setValue(detail, T::FieldCountry      , query->value(offset + 5));
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    const QStringList subTypeValues(query->value(offset + 6).toString().split(QLatin1Char(';'), Qt::SkipEmptyParts));
+#else
     const QStringList subTypeValues(query->value(offset + 6).toString().split(QLatin1Char(';'), QString::SkipEmptyParts));
+#endif
     setValue(detail, T::FieldSubTypes     , QVariant::fromValue<QList<int> >(subTypeList(subTypeValues)));
 }
 
@@ -306,7 +314,11 @@ static void setValues(QContactFamily *detail, QSqlQuery *query, const int offset
     typedef QContactFamily T;
 
     setValue(detail, T::FieldSpouse  , query->value(offset + 0));
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    setValue(detail, T::FieldChildren, query->value(offset + 1).toString().split(QLatin1Char(';'), Qt::SkipEmptyParts));
+#else
     setValue(detail, T::FieldChildren, query->value(offset + 1).toString().split(QLatin1Char(';'), QString::SkipEmptyParts));
+#endif
 }
 
 static const FieldInfo favoriteFields[] =
@@ -462,7 +474,11 @@ static void setValues(QContactOnlineAccount *detail, QSqlQuery *query, const int
     setValue(detail, T::FieldServiceProvider, query->value(offset + 3));
     setValue(detail, T::FieldCapabilities   , stringListValue(query->value(offset + 4)));
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    const QStringList subTypeValues(query->value(offset + 5).toString().split(QLatin1Char(';'), Qt::SkipEmptyParts));
+#else
     const QStringList subTypeValues(query->value(offset + 5).toString().split(QLatin1Char(';'), QString::SkipEmptyParts));
+#endif
     setValue(detail, T::FieldSubTypes, QVariant::fromValue<QList<int> >(subTypeList(subTypeValues)));
 
     setValue(detail, QContactOnlineAccount__FieldAccountPath,                query->value(offset + 6));
@@ -508,8 +524,11 @@ static void setValues(QContactPhoneNumber *detail, QSqlQuery *query, const int o
     typedef QContactPhoneNumber T;
 
     setValue(detail, T::FieldNumber  , query->value(offset + 0));
-
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    const QStringList subTypeValues(query->value(offset + 1).toString().split(QLatin1Char(';'), Qt::SkipEmptyParts));
+#else
     const QStringList subTypeValues(query->value(offset + 1).toString().split(QLatin1Char(';'), QString::SkipEmptyParts));
+#endif
     setValue(detail, T::FieldSubTypes, QVariant::fromValue<QList<int> >(subTypeList(subTypeValues)));
 
     setValue(detail, QContactPhoneNumber::FieldNormalizedNumber, query->value(offset + 2));
@@ -708,11 +727,19 @@ static void readDetail(QContact *contact, QSqlQuery &query, quint32 contactId, q
     if (!linkedDetailUrisValue.isEmpty()) {
         setValue(&detail,
                  QContactDetail::FieldLinkedDetailUris,
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+                 linkedDetailUrisValue.split(QLatin1Char(';'), Qt::SkipEmptyParts));
+#else
                  linkedDetailUrisValue.split(QLatin1Char(';'), QString::SkipEmptyParts));
+#endif
     }
     if (!contextValue.isEmpty()) {
         QList<int> contexts;
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+        foreach (const QString &context, contextValue.split(QLatin1Char(';'), Qt::SkipEmptyParts)) {
+#else
         foreach (const QString &context, contextValue.split(QLatin1Char(';'), QString::SkipEmptyParts)) {
+#endif
             const int type = contextType(context);
             if (type != -1) {
                 contexts.append(type);
@@ -2840,7 +2867,11 @@ QContactManager::Error ContactReader::readDeletedContactIds(
                 }
             } else if (filterType == QContactFilter::CollectionFilter) {
                 const QContactCollectionFilter &collectionFilter(static_cast<const QContactCollectionFilter &>(partialFilter));
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+                collectionIds = collectionFilter.collectionIds().values();
+#else
                 collectionIds = collectionFilter.collectionIds().toList();
+#endif
                 if (collectionIds.size() > 1) {
                     QTCONTACTS_SQLITE_WARNING(QString::fromLatin1("Cannot readDeletedContactIds with more than one collection specified: %1").arg(collectionIds.size()));
                     return QContactManager::UnspecifiedError;

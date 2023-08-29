@@ -1,0 +1,7 @@
+prefix=/usr
+includedir=${prefix}/include/qtcontacts-sqlite-qt6-extensions
+
+Name: qtcontacts-sqlite-qt6-extensions
+Description: QtContacts extensions implemented by qtcontacts-sqlite-qt6
+Version: 0.3.0
+Cflags:  -I${includedir}

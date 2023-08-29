@@ -3183,25 +3183,51 @@ void tst_QContactManager::changeSet()
     QSet<QContactId> changedIds;
     QSet<QContactDetail::DetailType> changedTypes;
     foreach (const QContactChangeSet::ContactChangeList &changes, changeSet.changedContacts()) {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+        changedIds |= QSet<QContactId>(changes.second.begin(),  changes.second.end());
+#else
         changedIds |= changes.second.toSet();
+#endif
         if (changes.second.contains(id)) {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+            changedTypes |= QSet<QContactDetail::DetailType>(changes.first.begin(),  changes.first.end());
+#else
             changedTypes |= changes.first.toSet();
+#endif
         }
     }
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    QList<QContactId> cid = QList<QContactId>() << id;
+    QList<QContactDetail::DetailType> ctype = QList<QContactDetail::DetailType>() << QContactName::Type << QContactBirthday::Type;
+
+    QCOMPARE(changedIds, QSet<QContactId>(cid.begin(), cid.end()));
+    QCOMPARE(changedTypes, QSet<QContactDetail::DetailType>(ctype.begin(), ctype.end()));
+#else
     QCOMPARE(changedIds, (QList<QContactId>() << id).toSet());
     QCOMPARE(changedTypes, (QList<QContactDetail::DetailType>() << QContactName::Type << QContactBirthday::Type).toSet());
+#endif
     changeSet.clearChangedContacts();
     QVERIFY(changeSet.changedContacts().isEmpty());
 
     QList<QContactId> l1, l2;
     foreach (int n, QList<int>() << 1 << 1 << 1 << 2 << 2 << 3 << 3 << 4 << 4 << 4 << 5 << 10 << 9 << 8 << 8 << 8 << 7 << 7 << 6) {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+        ((rand() % 2) ? l1 : l2).append(ContactId::apiId(n, QStringLiteral("tst_QContactManager::changeSet")));
+#else
         ((qrand() % 2) ? l1 : l2).append(ContactId::apiId(n, QStringLiteral("tst_QContactManager::changeSet")));
+#endif
     }
     changeSet.clearChangedContacts();
     changeSet.insertChangedContacts(l1, QList<QContactDetail::DetailType>() << QContactName::Type << QContactBirthday::Type);
     changeSet.insertChangedContacts(l2, QList<QContactDetail::DetailType>() << QContactBirthday::Type << QContactName::Type << QContactBirthday::Type);
     QCOMPARE(changeSet.changedContacts().size(), 1);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    QSet<QContactId> s1 = QSet<QContactId>(l1.begin(), l1.end());
+    QSet<QContactId> s2 = QSet<QContactId>(l2.begin(), l2.end());
+    QList<QContactId> expected((s1 | s2).values());
+#else
     QList<QContactId> expected((l1.toSet() | l2.toSet()).toList());
+#endif
     std::sort(expected.begin(), expected.end());
     QCOMPARE(changeSet.changedContacts().first().second, expected);
 
@@ -3218,7 +3244,11 @@ void tst_QContactManager::changeSet()
 
     changeSet2.clearAddedContacts();
     QVERIFY(changeSet2.addedContacts().isEmpty());
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    changeSet2.insertAddedContacts(changeSet.addedContacts().values());
+#else
     changeSet2.insertAddedContacts(changeSet.addedContacts().toList());
+#endif
     QVERIFY(changeSet.addedContacts() == changeSet2.addedContacts());
 
     changeSet2.clearAll();
@@ -3963,7 +3993,11 @@ void tst_QContactManager::familyDetail()
     QCOMPARE(a.details<QContactFamily>().count(), 1);
     f = a.details<QContactFamily>().at(0);
     QCOMPARE(f.spouse(), QLatin1String("Eve"));
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    QCOMPARE(QSet<QString>(f.children().begin(), f.children().end()) , QSet<QString>() << "Cain" << "Abel");
+#else
     QCOMPARE(f.children().toSet(), QSet<QString>() << "Cain" << "Abel");
+#endif
 
     QCOMPARE(a.relatedContacts(QContactRelationship::Aggregates(), QContactRelationship::First).count(), 1);
 
@@ -4263,8 +4297,13 @@ void tst_QContactManager::extendedDetail()
     {
         QDataStream ds(&d2, QIODevice::WriteOnly);
         for (int i = 0; i < 10; ++i) {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+            int x = rand();
+            int y = rand();
+#else
             int x = qrand();
             int y = qrand();
+#endif
             const double q = x / (y ? y : 1);
             ds << q;
         }

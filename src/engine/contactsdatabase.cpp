@@ -1800,8 +1800,11 @@ static bool updateStorageTypes(QSqlDatabase &database)
         while (query.next()) {
             const quint32 detailId(query.value(0).value<quint32>());
             const QString originalSubTypes(query.value(1).value<QString>());
-
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+            QStringList subTypeNames(originalSubTypes.split(QLatin1Char(';'), Qt::SkipEmptyParts));
+#else
             QStringList subTypeNames(originalSubTypes.split(QLatin1Char(';'), QString::SkipEmptyParts));
+#endif
             QStringList subTypeValues;
             foreach (int subTypeValue, Address::subTypeList(subTypeNames)) {
                 subTypeValues.append(QString::number(subTypeValue));
@@ -1948,8 +1951,11 @@ static bool updateStorageTypes(QSqlDatabase &database)
             const quint32 detailId(query.value(0).value<quint32>());
             const QString originalProtocol(query.value(1).value<QString>());
             const QString originalSubTypes(query.value(2).value<QString>());
-
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+            QStringList subTypeNames(originalSubTypes.split(QLatin1Char(';'), Qt::SkipEmptyParts));
+#else
             QStringList subTypeNames(originalSubTypes.split(QLatin1Char(';'), QString::SkipEmptyParts));
+#endif
             QStringList subTypeValues;
             foreach (int subTypeValue, OnlineAccount::subTypeList(subTypeNames)) {
                 subTypeValues.append(QString::number(subTypeValue));
@@ -1999,8 +2005,11 @@ static bool updateStorageTypes(QSqlDatabase &database)
         while (query.next()) {
             const quint32 detailId(query.value(0).value<quint32>());
             const QString originalSubTypes(query.value(1).value<QString>());
-
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+            QStringList subTypeNames(originalSubTypes.split(QLatin1Char(';'), Qt::SkipEmptyParts));
+#else
             QStringList subTypeNames(originalSubTypes.split(QLatin1Char(';'), QString::SkipEmptyParts));
+#endif
             QStringList subTypeValues;
             foreach (int subTypeValue, PhoneNumber::subTypeList(subTypeNames)) {
                 subTypeValues.append(QString::number(subTypeValue));
@@ -3260,7 +3269,9 @@ void ContactsDatabase::Query::reportError(const char *text) const
 
 ContactsDatabase::ContactsDatabase(ContactsEngine *engine)
     : m_engine(engine)
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     , m_mutex(QMutex::Recursive)
+#endif
     , m_nonprivileged(false)
     , m_autoTest(false)
     , m_localeName(QLocale().name())

@@ -74,7 +74,7 @@ SOURCES += \
 target.path = $$[QT_INSTALL_PLUGINS]/contacts
 INSTALLS += target
 
-PACKAGENAME=qtcontacts-sqlite-qt5-extensions
+PACKAGENAME=qtcontacts-sqlite-qt$${QT_MAJOR_VERSION}-extensions
 
 headers.path = $${PREFIX}/include/$${PACKAGENAME}
 headers.files = ../extensions/*

@@ -147,23 +147,42 @@ bool ContactWriter::commitTransaction()
         m_displayLabelGroupsChanged = false;
     }
     if (!m_addedCollectionIds.isEmpty()) {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+        m_notifier->collectionsAdded(m_addedCollectionIds.values());
+#else
         m_notifier->collectionsAdded(m_addedCollectionIds.toList());
+#endif
         m_addedCollectionIds.clear();
     }
     if (!m_changedCollectionIds.isEmpty()) {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+        m_notifier->collectionsChanged(m_changedCollectionIds.values());
+#else
         m_notifier->collectionsChanged(m_changedCollectionIds.toList());
+#endif
         m_changedCollectionIds.clear();
     }
     if (!m_addedIds.isEmpty()) {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+#else
         m_notifier->contactsAdded(m_addedIds.toList());
+#endif
         m_addedIds.clear();
     }
     if (!m_changedIds.isEmpty()) {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+        m_notifier->contactsChanged(m_changedIds.values());
+#else
         m_notifier->contactsChanged(m_changedIds.toList());
+#endif
         m_changedIds.clear();
     }
     if (!m_presenceChangedIds.isEmpty()) {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+        m_notifier->contactsPresenceChanged(m_presenceChangedIds.values());
+#else
         m_notifier->contactsPresenceChanged(m_presenceChangedIds.toList());
+#endif
         m_presenceChangedIds.clear();
     }
     if (m_suppressedCollectionIds.size()) {
@@ -175,7 +194,11 @@ bool ContactWriter::commitTransaction()
     }
     m_suppressedCollectionIds.clear();
     if (!m_collectionContactsChanged.isEmpty()) {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+        m_notifier->collectionContactsChanged(m_collectionContactsChanged.values());
+#else
         m_notifier->collectionContactsChanged(m_collectionContactsChanged.toList());
+#endif
         m_collectionContactsChanged.clear();
     }
     if (!m_removedIds.isEmpty()) {
@@ -185,12 +208,19 @@ bool ContactWriter::commitTransaction()
             removedDbIds.append(ContactId::databaseId(id));
         }
         m_database.removeTransientDetails(removedDbIds);
-
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+        m_notifier->contactsRemoved(m_removedIds.values());
+#else
         m_notifier->contactsRemoved(m_removedIds.toList());
+#endif
         m_removedIds.clear();
     }
     if (!m_removedCollectionIds.isEmpty()) {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+        m_notifier->collectionsRemoved(m_removedCollectionIds.values());
+#else
         m_notifier->collectionsRemoved(m_removedCollectionIds.toList());
+#endif
         m_removedCollectionIds.clear();
 
     }
@@ -469,7 +499,11 @@ QContactManager::Error ContactWriter::saveRelationships(
     }
 
     if (m_database.aggregating() && !aggregatesAffected.isEmpty() && !withinAggregateUpdate) {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+        QContactManager::Error writeError = regenerateAggregates(aggregatesAffected.values(), DetailList(), true);
+#else
         QContactManager::Error writeError = regenerateAggregates(aggregatesAffected.toList(), DetailList(), true);
+#endif
         if (writeError != QContactManager::NoError) {
             return writeError;
         }
@@ -599,7 +633,11 @@ QContactManager::Error ContactWriter::removeRelationships(
         }
 
         if (!aggregatesAffected.isEmpty()) {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+            QContactManager::Error writeError = regenerateAggregates(aggregatesAffected.values(), DetailList(), true);
+#else
             QContactManager::Error writeError = regenerateAggregates(aggregatesAffected.toList(), DetailList(), true);
+#endif
             if (writeError != QContactManager::NoError)
                 return writeError;
         }

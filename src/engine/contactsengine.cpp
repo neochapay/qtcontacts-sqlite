@@ -49,6 +49,7 @@
 
 #include <QCoreApplication>
 #include <QMutex>
+#include <QMutexLocker>
 #include <QThread>
 #include <QWaitCondition>
 #include <QElapsedTimer>
@@ -960,9 +961,13 @@ private:
 class JobThread : public QThread
 {
     struct MutexUnlocker {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+        QMutexLocker<QMutex> &m_locker;
+        explicit MutexUnlocker(QMutexLocker<QMutex> &locker) : m_locker(locker)
+#else
         QMutexLocker &m_locker;
-
         explicit MutexUnlocker(QMutexLocker &locker) : m_locker(locker)
+#endif
         {
             m_locker.unlock();
         }
@@ -1304,9 +1309,13 @@ ContactsEngine::ContactsEngine(const QString &name, const QMap<QString, QString>
     , m_parameters(parameters)
 {
     static bool registered = qRegisterMetaType<QList<int> >("QList<int>") &&
-                             qRegisterMetaType<QList<QContactDetail::DetailType> >("QList<QContactDetail::DetailType>") &&
-                             qRegisterMetaTypeStreamOperators<QList<int> >();
+                             qRegisterMetaType<QList<QContactDetail::DetailType> >("QList<QContactDetail::DetailType>")
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+                             && qRegisterMetaTypeStreamOperators<QList<int> >();
     Q_UNUSED(registered)
+#else
+        ;
+#endif
 
     QString nonprivileged = m_parameters.value(QString::fromLatin1("nonprivileged"));
     if (nonprivileged.toLower() == QLatin1String("true") ||

@@ -93,7 +93,11 @@ tst_DetailFetchRequest::~tst_DetailFetchRequest()
 {
     QTest::qWait(250); // wait for signals.
     if (!m_createdIds.isEmpty()) {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+        m_cm->removeContacts(m_createdIds.values());
+#else
         m_cm->removeContacts(m_createdIds.toList());
+#endif
         m_createdIds.clear();
     }
     delete m_cm;
@@ -111,7 +115,11 @@ void tst_DetailFetchRequest::cleanupTestCase()
 {
     QTest::qWait(250); // wait for signals.
     if (!m_createdIds.isEmpty()) {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+        m_cm->removeContacts(m_createdIds.values());
+#else
         m_cm->removeContacts(m_createdIds.toList());
+#endif
         m_createdIds.clear();
     }
 }
@@ -120,7 +128,11 @@ void tst_DetailFetchRequest::cleanup()
 {
     QTest::qWait(250); // wait for signals.
     if (!m_createdIds.isEmpty()) {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+        m_cm->removeContacts(m_createdIds.values());
+#else
         m_cm->removeContacts(m_createdIds.toList());
+#endif
         m_createdIds.clear();
     }
 }

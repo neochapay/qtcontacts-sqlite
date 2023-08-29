@@ -218,7 +218,11 @@ void tst_Aggregation::cleanup()
         m_createdIds.clear();
     }
     if (!m_createdColIds.isEmpty()) {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+        for (const QContactCollectionId &colId : m_createdColIds.values()) {
+#else
         for (const QContactCollectionId &colId : m_createdColIds.toList()) {
+#endif
             m_cm->removeCollection(colId);
             cme->clearChangeFlags(colId, &err);
         }
@@ -4590,13 +4594,20 @@ void tst_Aggregation::testOOB()
     QList<int> uniqueSequence;
     QList<int> repeatingSequence;
     QList<int> randomSequence;
-
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    srand(0);
+#else
     qsrand(0);
+#endif
     for (int i = 0; i < 100; ++i) {
         for (int j = 0; j < 10; ++j) {
             uniqueSequence.append(i * 100 + j);
             repeatingSequence.append(j);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+            randomSequence.append(rand());
+#else
             randomSequence.append(qrand());
+#endif
         }
     }
 

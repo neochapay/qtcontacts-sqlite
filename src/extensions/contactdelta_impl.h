@@ -483,9 +483,17 @@ QList<QContactDetail> improveDelta(
     QMultiHash<int, QContactDetail> bucketedAdditions;
 
     for (int i = 0; i < removals->size(); ++i)
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+        bucketedRemovals.insert(removals->at(i).type(), removals->at(i));
+#else
         bucketedRemovals.insertMulti(removals->at(i).type(), removals->at(i));
+#endif
     for (int i = 0; i < additions->size(); ++i)
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+        bucketedAdditions.insert(additions->at(i).type(), additions->at(i));
+#else
         bucketedAdditions.insertMulti(additions->at(i).type(), additions->at(i));
+#endif
 
     QSet<int> seenTypes;
     foreach (int type, bucketedRemovals.uniqueKeys()) {
